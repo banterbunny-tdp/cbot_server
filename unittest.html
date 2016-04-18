@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>CloudBOT Terminal PC unittest</title>
+    <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-1.23.1.css">
+</head>
+<body>
+    <div id="qunit"></div>
+    <div id="qunit-fixture"></div>
+    
+    <table width="100%">
+        <tr><th colspan="6">CloudBOT 1</th></tr>
+        <tr>
+            <td colspan="2">Left: <span id="ind1_left">&#9587;</span></td>
+            <td colspan="2">Center: <span id="ind1_center">&#9587;</span></td>
+            <td colspan="2">Right: <span id="ind1_right">&#9587;</span></td>
+        </tr>
+        <tr>
+            <td colspan="3">Distance: <span id="ind1_distance">0</span>cm</td>
+            <td colspan="3">Temp: <span id="ind1_temp">0</span>&deg;C</td>
+        </tr>
+        <tr><th colspan="6">CloudBOT 2</th></tr>
+        <tr>
+            <td colspan="2">Left: <span id="ind2_left">&#9587;</span></td>
+            <td colspan="2">Center: <span id="ind2_center">&#9587;</span></td>
+            <td colspan="2">Right: <span id="ind2_right">&#9587;</span></td>
+        </tr>
+        <tr>
+            <td colspan="3">Distance: <span id="ind2_distance">0</span>cm</td>
+            <td colspan="3">Temp: <span id="ind2_temp">0</span>&deg;C</td>
+        </tr>
+        <tr><th colspan="6">CloudBOT 3</th></tr>
+        <tr>
+            <td colspan="2">Left: <span id="ind3_left">&#9587;</span></td>
+            <td colspan="2">Center: <span id="ind3_center">&#9587;</span></td>
+            <td colspan="2">Right: <span id="ind3_right">&#9587;</span></td>
+        </tr>
+        <tr>
+            <td colspan="3">Distance: <span id="ind3_distance">0</span>cm</td>
+            <td colspan="3">Temp: <span id="ind3_temp">0</span>&deg;C</td>
+        </tr>
+     </table>
+    
+    
+    <script src="https://code.jquery.com/qunit/qunit-1.23.1.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/0.3.4/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
+    <script src="cbot_websocket.js"></script>
+
+    <!-- Call test cases -->
+    <script>
+        var dataz = undefined;
+
+        function onConnect(){
+            // Loopback without machine
+            //client.subscribe('/exchange/cbot/cbot.cbot1', function(data){
+            //    client.send(data.headers['reply-to'], {}, '{"leftsense":1, "centersense":1, "rightsense":1, "distance":100, "temperature": 1}')
+            //})
+            //client.subscribe('/exchange/cbot/cbot.cbot2', function(data){
+            //    client.send(data.headers['reply-to'], {}, '{"leftsense":1, "centersense":1, "rightsense":1, "distance":200, "temperature": 2}')
+            //})
+            //client.subscribe('/exchange/cbot/cbot.cbot3', function(data){
+            //    client.send(data.headers['reply-to'], {}, '{"leftsense":1, "centersense":1, "rightsense":1, "distance":300, "temperature": 3}')
+            //})
+
+            QUnit.test( "Testing sending telemetry", function( assert ) {
+                assert.ok( sendTelemetry("cbot1"), "CBOT1 okay" );
+                assert.ok( sendTelemetry("cbot2"), "CBOT2 okay" );
+                assert.ok( sendTelemetry("cbot3"), "CBOT3 okay" );
+            });
+        }
+
+        client.onreceive = function(data) {
+            var telemetryData = JSON.parse(data.body)
+            if ( data.headers.subscription == "/temp-queue/cbot1_telemetry" ){
+                QUnit.asyncTest( "Loopback from CBOT1", function( assert ) {
+                    assert.ok(telemetryData['leftsense'] != undefined, "LoopbackCBOT1 centersense okay [" + telemetryData['leftsense'] + "]");
+                    assert.ok(telemetryData['centersense'] != undefined, "LoopbackCBOT1 centersense okay [" + telemetryData['centersense'] + "]");
+                    assert.ok(telemetryData['rightsense'] != undefined, "LoopbackCBOT1 rightsense okay [" + telemetryData['rightsense'] + "]");
+                    assert.ok(telemetryData['distance'] != undefined, "LoopbackCBOT1 distance okay [" + telemetryData['distance'] + "]");
+                    assert.ok(telemetryData['temperature'] != undefined, "LoopbackCBOT1 temperature okay [" + telemetryData['temperature'] + "]");
+                    QUnit.start();
+                });
+                placeToPrefix(telemetryData, "ind1_")
+                QUnit.asyncTest( "Placing data to ind1_ group", function( assert ) {
+                    assert.ok(document.getElementById("ind1_left").innerHTML != "\u2573", "Left Indicator for CBOT1 changed!")
+                    assert.ok(document.getElementById("ind1_center").innerHTML != "\u2573", "Center Indicator for CBOT1 changed!")
+                    assert.ok(document.getElementById("ind1_right").innerHTML != "\u2573", "Right Indicator for CBOT1 changed!")
+                    assert.ok(document.getElementById("ind1_distance").innerHTML != "-", "Distance Indicator for CBOT1 changed!")
+                    assert.ok(document.getElementById("ind1_temp").innerHTML != "-", "Temperature Indicator for CBOT1 changed!")
+                    QUnit.start();
+                });
+            }else if ( data.headers.subscription == "/temp-queue/cbot2_telemetry" ){
+                QUnit.asyncTest( "Loopback from CBOT2", function( assert ) {
+                    assert.ok(telemetryData['leftsense'] != undefined, "LoopbackCBOT2 centersense okay [" + telemetryData['leftsense'] + "]");
+                    assert.ok(telemetryData['centersense'] != undefined, "LoopbackCBOT2 centersense okay [" + telemetryData['centersense'] + "]");
+                    assert.ok(telemetryData['rightsense'] != undefined, "LoopbackCBOT2 rightsense okay [" + telemetryData['rightsense'] + "]");
+                    assert.ok(telemetryData['distance'] != undefined, "LoopbackCBOT2 distance okay [" + telemetryData['distance'] + "]");
+                    assert.ok(telemetryData['temperature'] != undefined, "LoopbackCBOT2 temperature okay [" + telemetryData['temperature'] + "]");
+                    QUnit.start();
+                });
+                placeToPrefix(telemetryData, "ind2_")
+                QUnit.asyncTest( "Placing data to ind2_ group", function( assert ) {
+                    assert.ok(document.getElementById("ind2_left").innerHTML != "\u2573", "Left Indicator for CBOT1 changed!")
+                    assert.ok(document.getElementById("ind2_center").innerHTML != "\u2573", "Center Indicator for CBOT1 changed!")
+                    assert.ok(document.getElementById("ind2_right").innerHTML != "\u2573", "Right Indicator for CBOT1 changed!")
+                    assert.ok(document.getElementById("ind2_distance").innerHTML != "-", "Distance Indicator for CBOT1 changed!")
+                    assert.ok(document.getElementById("ind2_temp").innerHTML != "-", "Temperature Indicator for CBOT1 changed!")
+                    QUnit.start();
+                });
+            }else if ( data.headers.subscription == "/temp-queue/cbot3_telemetry" ){
+                QUnit.asyncTest( "Loopback from CBOT3", function( assert ) {
+                    assert.ok(telemetryData['leftsense'] != undefined, "LoopbackCBOT3 centersense okay [" + telemetryData['leftsense'] + "]");
+                    assert.ok(telemetryData['centersense'] != undefined, "LoopbackCBOT3 centersense okay [" + telemetryData['centersense'] + "]");
+                    assert.ok(telemetryData['rightsense'] != undefined, "LoopbackCBOT3 rightsense okay [" + telemetryData['rightsense'] + "]");
+                    assert.ok(telemetryData['distance'] != undefined, "LoopbackCBOT3 distance okay [" + telemetryData['distance'] + "]");
+                    assert.ok(telemetryData['temperature'] != undefined, "LoopbackCBOT3 temperature okay [" + telemetryData['temperature'] + "]");
+                    QUnit.start();
+                });
+                placeToPrefix(telemetryData, "ind3_")
+                QUnit.asyncTest( "Placing data to ind1_ group", function( assert ) {
+                    assert.ok(document.getElementById("ind3_left").innerHTML != "\u2573", "Left Indicator for CBOT1 changed!")
+                    assert.ok(document.getElementById("ind3_center").innerHTML != "\u2573", "Center Indicator for CBOT1 changed!")
+                    assert.ok(document.getElementById("ind3_right").innerHTML != "\u2573", "Right Indicator for CBOT1 changed!")
+                    assert.ok(document.getElementById("ind3_distance").innerHTML != "-", "Distance Indicator for CBOT1 changed!")
+                    assert.ok(document.getElementById("ind3_temp").innerHTML != "-", "Temperature Indicator for CBOT1 changed!")
+                    QUnit.start();
+                });
+            }
+        }
+
+        function onError(){
+
+        }
+        createConnection(onConnect, onError)
+    </script>
+
+
+</body>
+</html>

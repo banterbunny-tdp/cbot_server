@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- CSS for Bootstrap/General Design-->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/bootstrap-theme.min.css">
+
+    <title>CBOT Control</title>
+</head>
+<body>
+
+<xml id="toolbox" style="display: none">
+    <category name="CBOT Closures">
+        <block type="cbot_closure"></block>
+        <block type="cbot_forward"></block>
+        <block type="cbot_backward"></block>
+        <block type="cbot_turnleft"></block>
+        <block type="cbot_turnright"></block>
+        <block type="cbot_halt"></block>
+        <block type="cbot_import"></block>
+        <block type="cbot_sleep"></block>
+    </category>
+    <category name="Control">
+        <block type="controls_if"></block>
+        <block type="controls_whileUntil"></block>
+    </category>
+    <category name="Logic">
+        <block type="logic_compare"></block>
+        <block type="logic_operation"></block>
+        <block type="logic_boolean"></block>
+    </category>
+</xml>
+
+<div class="container-fluid">
+    <div class="row">
+        <div id="blocklyDiv" class="col-sm-10" style="height: 75vh"></div>
+        <div id="statusWindow" class="col-sm-2" style="height: 75vh">
+             <table width="100%">
+                  <tr><th colspan="6">CloudBOT 1</th></tr>
+                  <tr>
+                      <td colspan="2">Left: <span id="ind1_left">&#9587;</span></td>
+                      <td colspan="2">Center: <span id="ind1_center">&#9587;</span></td>
+                      <td colspan="2">Right: <span id="ind1_right">&#9587;</span></td>
+                  </tr>
+                  <tr>
+                      <td colspan="3">Dist: <span id="ind1_distance">0</span>cm</td>
+                      <td colspan="3">Temp: <span id="ind1_temp">0</span>&deg;C</td>
+                  </tr>
+                  <tr><th colspan="6">CloudBOT 2</th></tr>
+                  <tr>
+                      <td colspan="2">Left: <span id="ind2_left">&#9587;</span></td>
+                      <td colspan="2">Center: <span id="ind2_center">&#9587;</span></td>
+                      <td colspan="2">Right: <span id="ind2_right">&#9587;</span></td>
+                  </tr>
+                  <tr>
+                      <td colspan="3">Dist: <span id="ind2_distance">0</span>cm</td>
+                      <td colspan="3">Temp: <span id="ind2_temp">0</span>&deg;C</td>
+                  </tr>
+                  <tr><th colspan="6">CloudBOT 3</th></tr>
+                  <tr>
+                      <td colspan="2">Left: <span id="ind3_left">&#9587;</span></td>
+                      <td colspan="2">Center: <span id="ind3_center">&#9587;</span></td>
+                      <td colspan="2">Right: <span id="ind3_right">&#9587;</span></td>
+                  </tr>
+                  <tr>
+                      <td colspan="3">Dist: <span id="ind3_distance">0</span>cm</td>
+                      <td colspan="3">Temp: <span id="ind3_temp">0</span>&deg;C</td>
+                  </tr>
+             </table>
+        </div>
+    </div>
+    <div class="row">
+        <div id="blocklyCode" class="col-sm-12" style="height: 10vh"></div>
+        <div id="stompDebug" class="col-sm-12" style="height: 10vh"></div>
+        <input type="button" value="Submit" onclick="sendToCGIBIN()"/>
+    </div>
+</div>
+
+<!-- Script imports needed by Blockly -->
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/js/blockly_compressed.js"></script>
+<script src="assets/js/blocks_compressed.js"></script>
+<script src="assets/js/en.js"></script>
+<script src="assets/js/python_compressed.js"></script>
+<script src="assets/js/bootstrap.min.js"></script>
+
+<!-- Script imports needed by Web Stomp/AMQP broker connection -->
+<script src="assets/js/sockjs.min.js"></script>
+<script src="assets/js/stomp.min.js"></script>
+
+<!-- CloudBOT defined scripts -->
+<script src="cbot_blocks.js"></script>
+<script src="cbot_blocks_definition.js"></script>
+<script src="cbot_websocket.js"></script>
+<script src="cbot_blockly.js"></script>
+
+<script>
+    //==========================
+    // Websocket callbacks
+    //==========================
+    function onConnect(){
+        // This should be overriden
+        console.log("Connected, starting poll.");
+        sendTelemetry("cbot1")
+        sendTelemetry("cbot2")
+        sendTelemetry("cbot3")
+    }
+
+    function onError(){
+        alert("Cannot connect to broker!");
+    }
+    createConnection(onConnect, onError)
+
+    client.onreceive = function(m) {
+        // Override function on receive
+        var telemetryData = JSON.parse(m.body);
+        if (m.headers.subscription == "/temp-queue/cbot1_telemetry"){
+            placeToPrefix(telemetryData, "ind1_")
+            sendTelemetry("cbot1")
+        }else if(m.headers.subscription == "/temp-queue/cbot2_telemetry"){
+            placeToPrefix(telemetryData, "ind2_")
+            sendTelemetry("cbot2")
+        }else if(m.headers.subscription == "/temp-queue/cbot3_telemetry"){
+            placeToPrefix(telemetryData, "ind3_")
+            sendTelemetry("cbot3")
+        }
+    }
+</script>
+
+
+</body>
+</html>
