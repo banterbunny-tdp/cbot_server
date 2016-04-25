@@ -80,3 +80,51 @@ Blockly.Blocks['cbot_sleep'] = {
     this.setColour(50);
     }
 };
+Blockly.Blocks['cbot_getdistance'] = {
+    init: function() {
+    this.setOutput(true, null);
+    this.appendDummyInput()
+        .appendField("Get Distance");
+    this.setColour(210);
+    }
+};
+Blockly.Blocks['cbot_gettemperature'] = {
+    init: function() {
+    this.setOutput(true, null);
+    this.appendDummyInput()
+        .appendField("Get Temperature");
+    this.setColour(210);
+    }
+};
+Blockly.Blocks['cbot_getbearing'] = {
+    init: function() {
+    this.setOutput(true, null);
+    this.appendDummyInput()
+        .appendField("Get Bearing");
+    this.setColour(210);
+    }
+};
+Blockly.Blocks['cbot_leftsense'] = {
+    init: function() {
+    this.setOutput(true, null);
+    this.appendDummyInput()
+        .appendField("Left Line Sensor");
+    this.setColour(210);
+    }
+};
+Blockly.Blocks['cbot_centersense'] = {
+    init: function() {
+    this.setOutput(true, null);
+    this.appendDummyInput()
+        .appendField("Center Line Sensor");
+    this.setColour(210);
+    }
+};
+Blockly.Blocks['cbot_rightsense'] = {
+    init: function() {
+    this.setOutput(true, null);
+    this.appendDummyInput()
+        .appendField("Right Line Sensor");
+    this.setColour(210);
+    }
+};

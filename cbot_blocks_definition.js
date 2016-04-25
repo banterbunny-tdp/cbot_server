@@ -61,3 +61,27 @@ Blockly.Python['cbot_sleep'] = function(block) {
     var code = 'time.sleep(' + text_cbot_sleep + ')\n';
     return code;
 };
+Blockly.Python['cbot_getdistance'] = function(block) {
+    var code = 'getDistance()';
+    return [code, Blockly.Python.ORDER_NONE];
+};
+Blockly.Python['cbot_gettemperature'] = function(block) {
+    var code = 'getTemperature()';
+    return [code, Blockly.Python.ORDER_NONE];
+};
+Blockly.Python['cbot_getbearing'] = function(block) {
+    var code = 'getBearing()["t"]';
+    return [code, Blockly.Python.ORDER_NONE];
+};
+Blockly.Python['cbot_leftsense'] = function(block) {
+    var code = 'leftSense()';
+    return [code, Blockly.Python.ORDER_NONE];
+};
+Blockly.Python['cbot_centersense'] = function(block) {
+    var code = 'centerSense()';
+    return [code, Blockly.Python.ORDER_NONE];
+};
+Blockly.Python['cbot_rightsense'] = function(block) {
+    var code = 'rightSense()';
+    return [code, Blockly.Python.ORDER_NONE];
+};
