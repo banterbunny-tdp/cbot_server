@@ -128,3 +128,23 @@ Blockly.Blocks['cbot_rightsense'] = {
     this.setColour(210);
     }
 };
+Blockly.Blocks['cbot_forwardloop'] = {
+    init: function() {
+    this.setOutput(true, null);
+    this.appendDummyInput()
+        .appendField("Forward Loop")
+        .appendField(new Blockly.FieldTextInput("0"), "cbot_instance")
+        .appendField(new Blockly.FieldTextInput("0"), "cbot_distance")
+    this.setColour(210);
+    }
+};
+Blockly.Blocks['cbot_backwardloop'] = {
+    init: function() {
+    this.setOutput(true, null);
+    this.appendDummyInput()
+        .appendField("Backward Loop")
+        .appendField(new Blockly.FieldTextInput("0"), "cbot_instance")
+        .appendField(new Blockly.FieldTextInput("0"), "cbot_distance")
+    this.setColour(210);
+    }
+};

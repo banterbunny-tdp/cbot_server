@@ -10,6 +10,7 @@ Blockly.Python['cbot_closure'] = function(block) {
         var stmt = statements_cbot_closure;
 
         var lines = stmt.split("\n")
+        lines = ['import time'].concat(lines)
         var complete = false;
         while(!complete){
             complete = true;
@@ -83,5 +84,17 @@ Blockly.Python['cbot_centersense'] = function(block) {
 };
 Blockly.Python['cbot_rightsense'] = function(block) {
     var code = 'rightSense()';
+    return [code, Blockly.Python.ORDER_NONE];
+};
+Blockly.Python['cbot_forwardloop'] = function(block) {
+    var text_cbot_instance = block.getFieldValue('cbot_instance');
+    var text_cbot_distance = block.getFieldValue('cbot_distance');
+    var code = 'forwardLoopBlock("' + text_cbot_instance + '",' + text_cbot_distance + ')';
+    return [code, Blockly.Python.ORDER_NONE];
+};
+Blockly.Python['cbot_backwardloop'] = function(block) {
+    var text_cbot_instance = block.getFieldValue('cbot_instance');
+    var text_cbot_distance = block.getFieldValue('cbot_distance');
+    var code = 'backwardLoopBlock("' + text_cbot_instance + '",' + text_cbot_distance + ')';
     return [code, Blockly.Python.ORDER_NONE];
 };

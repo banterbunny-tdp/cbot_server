@@ -23,7 +23,7 @@ function sendTelemetry(cbotName){
         {"reply-to":"/temp-queue/" + cbotName + "_telemetry",
         "x-message-ttl": 500,
         "content-type":"text/plain"},
-        "pass")
+        "pass #@telemetry")
 }
 
 function placeToPrefix(telemetryData, nodePrefix){
