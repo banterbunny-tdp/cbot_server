@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <!-- CSS for Bootstrap/General Design-->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/bootstrap-theme.min.css">
+
+    <title>CBOT Control</title>
+</head>
+<body>
+
+<xml id="toolbox" style="display: none">
+    <category name="CBOT Closures">
+        <block type="cbot_closure"></block>
+        <block type="cbot_forward"></block>
+        <block type="cbot_backward"></block>
+        <block type="cbot_turnleft"></block>
+        <block type="cbot_turnright"></block>
+        <block type="cbot_halt"></block>
+        <block type="cbot_sleep"></block>
+        <block type="cbot_getdistance"></block>
+        <block type="cbot_gettemperature"></block>
+        <block type="cbot_getbearing"></block>
+        <block type="cbot_leftsense"></block>
+        <block type="cbot_centersense"></block>
+        <block type="cbot_rightsense"></block>
+        <block type="cbot_forwardloop"></block>
+        <block type="cbot_backwardloop"></block>
+    </category>
+    <category name="Logic">
+      <category name="If">
+        <block type="controls_if"></block>
+        <block type="controls_if">
+          <mutation else="1"></mutation>
+        </block>
+        <block type="controls_if">
+          <mutation elseif="1" else="1"></mutation>
+        </block>
+      </category>
+      <category name="Boolean">
+        <block type="logic_compare"></block>
+        <block type="logic_operation"></block>
+        <block type="logic_negate"></block>
+        <block type="logic_boolean"></block>
+        <block type="logic_null"></block>
+        <block type="logic_ternary"></block>
+      </category>
+    </category>
+    <category name="Loops">
+      <block type="controls_repeat_ext">
+        <value name="TIMES">
+          <block type="math_number">
+            <field name="NUM">10</field>
+          </block>
+        </value>
+      </block>
+      <block type="controls_whileUntil"></block>
+      <block type="controls_for">
+        <field name="VAR">i</field>
+        <value name="FROM">
+          <block type="math_number">
+            <field name="NUM">1</field>
+          </block>
+        </value>
+        <value name="TO">
+          <block type="math_number">
+            <field name="NUM">10</field>
+          </block>
+        </value>
+        <value name="BY">
+          <block type="math_number">
+            <field name="NUM">1</field>
+          </block>
+        </value>
+      </block>
+      <block type="controls_forEach"></block>
+      <block type="controls_flow_statements"></block>
+    </category>
+    <category name="Math">
+      <block type="math_number"></block>
+      <block type="math_arithmetic"></block>
+      <block type="math_single"></block>
+      <block type="math_trig"></block>
+      <block type="math_constant"></block>
+      <block type="math_number_property"></block>
+      <block type="math_change">
+        <value name="DELTA">
+          <block type="math_number">
+            <field name="NUM">1</field>
+          </block>
+        </value>
+      </block>
+      <block type="math_round"></block>
+      <block type="math_on_list"></block>
+      <block type="math_modulo"></block>
+      <block type="math_constrain">
+        <value name="LOW">
+          <block type="math_number">
+            <field name="NUM">1</field>
+          </block>
+        </value>
+        <value name="HIGH">
+          <block type="math_number">
+            <field name="NUM">100</field>
+          </block>
+        </value>
+      </block>
+      <block type="math_random_int">
+        <value name="FROM">
+          <block type="math_number">
+            <field name="NUM">1</field>
+          </block>
+        </value>
+        <value name="TO">
+          <block type="math_number">
+            <field name="NUM">100</field>
+          </block>
+        </value>
+      </block>
+      <block type="math_random_float"></block>
+    </category>
+    <category name="Lists">
+      <block type="lists_create_empty"></block>
+      <block type="lists_create_with"></block>
+      <block type="lists_repeat">
+        <value name="NUM">
+          <block type="math_number">
+            <field name="NUM">5</field>
+          </block>
+        </value>
+      </block>
+      <block type="lists_length"></block>
+      <block type="lists_isEmpty"></block>
+      <block type="lists_indexOf"></block>
+      <block type="lists_getIndex"></block>
+      <block type="lists_setIndex"></block>
+    </category>
+    <category name="Variables" custom="VARIABLE"></category>
+</xml>
+
+<div class="container-fluid">
+    <div class="row">
+        <div id="blocklyDiv" class="col-sm-10" style="height: 75vh"></div>
+        <div id="statusWindow" class="col-sm-2" style="height: 75vh">
+             <table width="100%">
+                  <tr><th colspan="6">CloudBOT 1</th></tr>
+                  <tr>
+                      <td colspan="2">Left: <span id="ind1_left">&#9587;</span></td>
+                      <td colspan="2">Center: <span id="ind1_center">&#9587;</span></td>
+                      <td colspan="2">Right: <span id="ind1_right">&#9587;</span></td>
+                  </tr>
+                  <tr>
+                      <td colspan="3">Dist: <span id="ind1_distance">0</span>cm</td>
+                      <td colspan="3">Temp: <span id="ind1_temp">0</span>&deg;C</td>
+                  </tr>
+                  <tr><th colspan="6">CloudBOT 2</th></tr>
+                  <tr>
+                      <td colspan="2">Left: <span id="ind2_left">&#9587;</span></td>
+                      <td colspan="2">Center: <span id="ind2_center">&#9587;</span></td>
+                      <td colspan="2">Right: <span id="ind2_right">&#9587;</span></td>
+                  </tr>
+                  <tr>
+                      <td colspan="3">Dist: <span id="ind2_distance">0</span>cm</td>
+                      <td colspan="3">Temp: <span id="ind2_temp">0</span>&deg;C</td>
+                  </tr>
+                  <tr><th colspan="6">CloudBOT 3</th></tr>
+                  <tr>
+                      <td colspan="2">Left: <span id="ind3_left">&#9587;</span></td>
+                      <td colspan="2">Center: <span id="ind3_center">&#9587;</span></td>
+                      <td colspan="2">Right: <span id="ind3_right">&#9587;</span></td>
+                  </tr>
+                  <tr>
+                      <td colspan="3">Dist: <span id="ind3_distance">0</span>cm</td>
+                      <td colspan="3">Temp: <span id="ind3_temp">0</span>&deg;C</td>
+                  </tr>
+             </table>
+        </div>
+    </div>
+    <div class="row">
+        <div id="blocklyCode" class="col-sm-12" style="height: 10vh"></div>
+        <div id="stompDebug" class="col-sm-12" style="height: 10vh"></div>
+        <input type="button" value="Submit" onclick="sendToCGIBIN()"/>
+    </div>
+</div>
+
+<!-- Script imports needed by Blockly -->
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/js/blockly_compressed.js"></script>
+<script src="assets/js/blocks_compressed.js"></script>
+<script src="assets/js/en.js"></script>
+<script src="assets/js/python_compressed.js"></script>
+<script src="assets/js/bootstrap.min.js"></script>
+
+<!-- Script imports needed by Web Stomp/AMQP broker connection -->
+<script src="assets/js/sockjs.min.js"></script>
+<script src="assets/js/stomp.min.js"></script>
+<script src="assets/js/mqttws31.js"></script>
+
+<!-- CloudBOT defined scripts -->
+<script src="cbot_blocks.js"></script>
+<script src="cbot_blocks_definition.js"></script>
+<script src="cbot_websocket.js"></script>
+<script src="cbot_blockly.js"></script>
+
+<script>
+    //==========================
+    // Websocket callbacks
+    //==========================
+    function onConnect(){
+        // This should be overriden
+        console.log("Connected, starting poll.");
+
+        var cbot1telemetry =  client.subscribe("cbot1telemetry", function(msg){
+            var telemetryData = JSON.parse(msg.body);
+            placeToPrefix(telemetryData, "ind1_");
+            //msg.ack();
+            sendTelemetry("cbot1");
+        });
+        var cbot2telemetry =  client.subscribe("cbot2telemetry", function(msg){
+            var telemetryData = JSON.parse(msg.body);
+            placeToPrefix(telemetryData, "ind2_");
+            //msg.ack();
+            sendTelemetry("cbot2");
+        });
+        var cbot3telemetry =  client.subscribe("cbot3telemetry", function(msg){
+            var telemetryData = JSON.parse(msg.body);
+            placeToPrefix(telemetryData, "ind3_");
+            //msg.ack();
+            sendTelemetry("cbot3");
+        });
+
+        sendTelemetry("cbot1")
+        sendTelemetry("cbot2")
+        sendTelemetry("cbot3")
+    }
+
+    function onError(){
+        alert("Cannot connect to broker!");
+    }
+    createConnection(onConnect, onError)
+
+    //client.onreceive = function(m) {
+    //    // Override function on receive
+    //    var telemetryData = JSON.parse(m.body);
+    //    alert(telemetryData);
+    //    if (m.headers.subscription == "/temp-queue/cbot1_telemetry"){
+    //        placeToPrefix(telemetryData, "ind1_")
+    //        sendTelemetry("cbot1")
+    //    }else if(m.headers.subscription == "/temp-queue/cbot2_telemetry"){
+    //        placeToPrefix(telemetryData, "ind2_")
+    //        sendTelemetry("cbot2")
+    //    }else if(m.headers.subscription == "/temp-queue/cbot3_telemetry"){
+    //        placeToPrefix(telemetryData, "ind3_")
+    //        sendTelemetry("cbot3")
+    //    }
+    //}
+</script>
+
+
+</body>
+</html>
